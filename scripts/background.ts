@@ -1,3 +1,4 @@
+
 chrome.webNavigation.onBeforeNavigate.addListener((details => {
     checkUrl(details.url)
 }))
@@ -31,10 +32,10 @@ function checkUrl(url: string) {
 
             let episodePosition = ""
 
-            for(let i = 0; i < episodeDetails.split(" ").length - 1; i++) {
-                if(i == 0) {
+            for (let i = 0; i < 4; i++) {
+                if (i == 0) {
                     episodePosition += episodeDetails.split(" ")[i]
-                }else {
+                } else {
                     episodePosition += " " + episodeDetails.split(" ")[i]
                 }
             }
@@ -44,6 +45,11 @@ function checkUrl(url: string) {
             const episodeName = episodeDetails.replace(episodePosition + " ", "")
 
             console.log(episodeName)
+
+            fetch("http://localhost:4040/?sn=" + seriesName + "&en=" + episodeName + "&ep=" + episodePosition, {
+                method: 'POST',
+                mode: 'cors'
+            })
 
         })
     }
