@@ -1,5 +1,17 @@
 let lastReq = ""
 
+const extId = chrome.runtime.id
+
+console.log("##    ##  #######  ######## ########")
+console.log("###   ## ##     ##    ##    ##")
+console.log("####  ## ##     ##    ##    ##")
+console.log("## ## ## ##     ##    ##    ######")
+console.log("##  #### ##     ##    ##    ##")
+console.log("##   ### ##     ##    ##    ##")
+console.log("##    ##  #######     ##    ########")
+console.log("")
+console.log("You have to run the external programm on your pc!")
+
 setInterval(() => {
     chrome.tabs.query({
         active: true
