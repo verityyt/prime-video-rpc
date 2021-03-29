@@ -1,34 +1,31 @@
+let lastReq = ""
 
-chrome.webNavigation.onBeforeNavigate.addListener((details => {
-    checkUrl(details.url)
-}))
-
-chrome.tabs.onActivated.addListener((activeInfo => {
+setInterval(() => {
     chrome.tabs.query({
         active: true
     }, (tabs) => {
         const url = tabs[0].url
 
         if (url !== undefined) {
-            checkUrl(url)
+            updateRPC(url)
         }
     })
-}))
+}, 2 * 1000)
 
-function checkUrl(url: string) {
+function updateRPC(url: string) {
     if (url.startsWith("https://www.amazon.de/gp/") || url.startsWith("https://www.amazon.com/gp/")) {
         chrome.tabs.executeScript({
             code: '(function getPlayback() {\n' +
                 '    const title = document.getElementsByClassName("atvwebplayersdk-title-text")[0].textContent\n' +
                 '    const subtitle = document.getElementsByClassName("atvwebplayersdk-subtitle-text")[0].textContent\n' +
+                '    const playPauseBtn = document.getElementsByClassName("atvwebplayersdk-playpause-button")[0].getAttribute("aria-label")\n' +
                 '\n' +
-                '    return({ title, subtitle })\n' +
+                '    return ({ title, subtitle, playPauseBtn })\n' +
                 '})()'
         }, results => {
             const seriesName = results["0"]["title"] as string
             const episodeDetails = results["0"]["subtitle"] as string
-
-            console.log(seriesName)
+            const playPauseState = results["0"]["playPauseBtn"] as string
 
             let episodePosition = ""
 
@@ -40,17 +37,27 @@ function checkUrl(url: string) {
                 }
             }
 
-            console.log(episodePosition)
-
             const episodeName = episodeDetails.replace(episodePosition + " ", "")
+            const curReq = "http://localhost:6969/update?sn=" + seriesName.replace(" ", "_") + "&en=" + episodeName.replace(" ", "_") + "&ep=" + episodePosition.replace(" ", "_") + "&pp=" + playPauseState
 
-            console.log(episodeName)
+            if (lastReq != curReq) {
+                console.log("Fetching...")
 
-            fetch("http://localhost:4040/?sn=" + seriesName + "&en=" + episodeName + "&ep=" + episodePosition, {
-                method: 'POST',
-                mode: 'cors'
-            })
+                fetch(curReq, {
+                    method: 'POST'
+                })
+
+                lastReq = curReq
+            }
 
         })
     }
+}
+
+function getPlayback() {
+    const title = document.getElementsByClassName("atvwebplayersdk-title-text")[0].textContent
+    const subtitle = document.getElementsByClassName("atvwebplayersdk-subtitle-text")[0].textContent
+    const playPauseBtn = document.getElementsByClassName("atvwebplayersdk-playpause-button")[0].getAttribute("aria-label")
+
+    return ({ title, subtitle, playPauseBtn })
 }

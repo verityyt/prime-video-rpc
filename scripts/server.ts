@@ -14,27 +14,42 @@ rpc.on("ready", () => {
     const app = expres()
 
     app.use(cors({
-        origin: ['http://localhost']
+        origin: ['http://localhost', 'chrome-extension://ljfnldkldlmacpiffmhngibmcjokaajl']
     }))
 
-    app.post("/", (req, res) => {
+    app.post("/update", (req, res) => {
         const query = req.query
 
-        const seriesName = query["sn"]
-        const episodeName = query["en"]
-        const episodePosition = query["ep"]
+        console.log("call")
+
+        const seriesName = query["sn"].replace("_", " ")
+        const episodeName = query["en"].replace("_", " ")
+        const episodePosition = query["ep"].replace("_", " ")
+        const playPauseState = query["pp"]
+
+        let smallImageKey = "play"
+        let smallImageText = "Playing"
+
+        if (playPauseState == "Play") {
+            smallImageKey = "pause"
+            smallImageText = "Paused"
+        }
+
 
         rpc.setActivity({
             details: episodeName,
             state: seriesName + " - " + episodePosition.replace("Staffel", "S."),
             largeImageKey: "default",
             largeImageText: "Amazon Prime Video",
+            smallImageKey: smallImageKey,
+            smallImageText: smallImageText,
             instance: true
         })
 
+        res.send({ sucess: true })
     })
 
-    app.listen(4040, () => {
+    app.listen(6969, () => {
         console.log(`\nExpress running...`)
     })
 
