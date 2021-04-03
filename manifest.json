@@ -1,0 +1,22 @@
+{
+  "name": "Prime Video RPC",
+  "description": "Shows current prime video playback in your discord rich presence",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "storage",
+    "webNavigation",
+    "https://www.amazon.de/*",
+    "https://www.amazon.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "scripts/bundle.js"
+    ],
+    "persistent": false
+  },
+  "icons": {
+    "512": "images/icon_512.png"
+  },
+  "manifest_version": 2
+}
