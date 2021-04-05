@@ -1,0 +1,1 @@
+wt node "D:\Development\Workspace\Chrome Extentions\prime-video-rpc\scripts\server.js"
